@@ -1,23 +1,17 @@
-#define SENSOR_PIN 34
-#define LED_PIN 2
+// Projeto: Sistema de Irrigação Automática com IoT e MQTT // Autor: Matheus Abreu e equipe
+
+#include <WiFi.h> #include <PubSubClient.h>
+
+// Credenciais da rede Wi-Fi const char* ssid = "Wokwi-GUEST"; const char* password = "";
+
+// Broker MQTT const char* mqtt_server = "test.mosquitto.org";
+
+WiFiClient espClient; PubSubClient client(espClient);
+
+#define SENSOR_PIN 34 #define LED_PIN 2
+
+void setup_wifi() { delay(10); Serial.println("Conectando-se ao WiFi..."); WiFi.begin(ssid, password); while (WiFi.status() != WL_CONNECTED) { delay(500); Serial.print("."); } Serial.println(""); Serial.println("WiFi conectado"); Serial.print("Endereço IP: "); Serial.println(WiFi.localIP()); }
+
+void reconnect() { while (!client.connected()) { Serial.print("Conectando ao MQTT..."); if (client.connect("ESP32Client")) { Serial.println("conectado"); } else { Serial.print("falhou, rc="); Serial.print(client.state()); delay(5000); } } }
 
 void setup() {
-  Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
-}
-
-void loop() {
-  int umidade = analogRead(SENSOR_PIN);
-  Serial.print("Umidade: ");
-  Serial.println(umidade);
-
-  if (umidade < 900) {
-    digitalWrite(LED_PIN, HIGH);
-    Serial.println("Bomba ligada");
-  } else {
-    digitalWrite(LED_PIN, LOW);
-    Serial.println("Solo úmido, bomba desligada");
-  }
-
-  delay(2000);
-}
